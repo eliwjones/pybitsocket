@@ -1,0 +1,8 @@
+<script>
+    var query = {'things': 'be', 'there': 'here'}
+    var stream = new EventSource('/s/' + btoa(JSON.stringify(query)))
+
+    stream.onmessage = function(e) {
+        console.info(e.data);
+    };
+</script>
