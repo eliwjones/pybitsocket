@@ -57,6 +57,6 @@ if __name__ == '__main__':
     """
       TODO: replace threaded with regular gunicorn with gevent.
       
-      gunicorn --worker-class=gevent --workers=4 --bind=0.0.0.0:3000 --log-level=debug app:app
+      gunicorn --worker-class=gevent --workers=1 --bind=0.0.0.0:3000 --log-level=debug app:app
     """
     app.run(host='0.0.0.0', port=3000, debug=True)
