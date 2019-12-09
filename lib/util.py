@@ -29,9 +29,7 @@ def rawtx_receiver():
     context = zmq.Context()
 
     socket = context.socket(zmq.SUB)
-
     socket.setsockopt(zmq.RCVHWM, 10)
-
     socket.setsockopt(zmq.SUBSCRIBE, b"rawtx")
 
     socket.connect("tcp://127.0.0.1:28332")
