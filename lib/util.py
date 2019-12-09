@@ -1,13 +1,8 @@
+import base64
 import json
-import zmq
-# import zmq.green as zmq
+import zmq.green as zmq
 
-
-def normalize_b64(doc):
-    b64_doc = json.loads(base64.b64decode(doc))
-    sort_all_lists(b64_doc)
-
-    b64_doc = base64.b64encode(json.dumps(b64_doc, sort_keys=True).encode('utf-8'))
+from gevent.queue import Empty
 
 
 def event_stream(q):
@@ -20,16 +15,29 @@ def event_stream(q):
         print(f"Sending: {message}")
         yield f"data: {message}\n\n"
 
-@context()
-@socket(CONNECTION_TYPE)
-def rawtx_subscriber():
-    address = "tcp://127.0.0.1:28332"
-    zmq_context = zmq.Context()
-    socket = zmq_context.socket(zmq.SUB)
-    socket.set(zmq.RCVTIMEO, 60000)
-    socket.connect(address)
+
+def normalize_b64(doc):
+    b64_doc = json.loads(base64.b64decode(doc))
+    sort_all_lists(b64_doc)
+
+    b64_doc = base64.b64encode(json.dumps(b64_doc, sort_keys=True).encode('utf-8'))
+
+    return b64_doc
+
+
+def rawtx_receiver():
+    context = zmq.Context()
+
+    socket = context.socket(zmq.SUB)
+
+    socket.setsockopt(zmq.RCVHWM, 10)
+
     socket.setsockopt(zmq.SUBSCRIBE, b"rawtx")
-    return socket
+
+    socket.connect("tcp://127.0.0.1:28332")
+
+    while True:
+        yield socket.recv_multipart()
 
 
 def sort_all_lists(obj):
