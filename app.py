@@ -17,11 +17,10 @@ QUEUES = {}
 
 
 def tx_consumer():
-    rawtx_receiver = util.rawtx_receiver()
-    for message in rawtx_receiver:
+    for message in util.pool_stream(util.rawtx_stream()):
         for query in QUEUES:
             """
-              Determine if message potentially matches query filter.
+              TODO: Determine if message potentially matches query filter.
             """
             match = True
             if not match:
